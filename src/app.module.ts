@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import configuration from './config/configuration';
 import { getDatabaseConfig } from './config/database.config';
 import { JwtStrategy } from './common/strategies';
+import { ThreadsModule } from './modules/threads/threads.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { JwtStrategy } from './common/strategies';
       inject: [ConfigService],
     }),
     PassportModule.register({ defaultStrategy: 'jwt' }),
+    ThreadsModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],
