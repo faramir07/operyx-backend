@@ -7,6 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Thread } from './entities/thread.entity';
+import { Supplier } from '../suppliers/entities/supplier.entity';
 import { CreateThreadDto } from './dto/create-thread.dto';
 import { UpdateThreadDto } from './dto/update-thread.dto';
 import { QueryThreadDto } from './dto/query-thread.dto';
@@ -18,6 +19,8 @@ export class ThreadsService {
   constructor(
     @InjectRepository(Thread)
     private readonly threadRepository: Repository<Thread>,
+    @InjectRepository(Supplier)
+    private readonly supplierRepository: Repository<Supplier>,
   ) {}
 
   async create(createThreadDto: CreateThreadDto): Promise<Thread> {
@@ -30,6 +33,19 @@ export class ThreadsService {
       throw new ConflictException(
         `Ya existe un hilo con el código ${createThreadDto.code}`,
       );
+    }
+
+    // Si se proporciona supplierId, validar que el proveedor exista
+    if (createThreadDto.supplierId) {
+      const supplierCount = await this.supplierRepository.count({
+        where: { id: createThreadDto.supplierId },
+      });
+
+      if (supplierCount === 0) {
+        throw new NotFoundException(
+          `Proveedor con ID ${createThreadDto.supplierId} no encontrado`,
+        );
+      }
     }
 
     const thread = this.threadRepository.create({
@@ -68,6 +84,13 @@ export class ThreadsService {
     if (filters.color) {
       queryBuilder.andWhere('thread.color = :color', { color: filters.color });
     }
+    if (filters.supplierId) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const supplierId: string = filters.supplierId;
+      queryBuilder.andWhere('thread.supplierId = :supplierId', {
+        supplierId,
+      });
+    }
 
     // Búsqueda general
     if (search) {
@@ -95,7 +118,10 @@ export class ThreadsService {
   }
 
   async findOne(id: string): Promise<Thread> {
-    const thread = await this.threadRepository.findOne({ where: { id } });
+    const thread = await this.threadRepository.findOne({
+      where: { id },
+      relations: ['supplier'],
+    });
 
     if (!thread) {
       throw new NotFoundException(`Hilo con ID ${id} no encontrado`);
@@ -116,6 +142,22 @@ export class ThreadsService {
       if (existingThread) {
         throw new ConflictException(
           `Ya existe un hilo con el código ${updateThreadDto.code}`,
+        );
+      }
+    }
+
+    // Si se proporciona supplierId, validar que el proveedor exista (si no es undefined/null)
+    if (
+      updateThreadDto.supplierId !== undefined &&
+      updateThreadDto.supplierId !== null
+    ) {
+      const supplierCount = await this.supplierRepository.count({
+        where: { id: updateThreadDto.supplierId },
+      });
+
+      if (supplierCount === 0) {
+        throw new NotFoundException(
+          `Proveedor con ID ${updateThreadDto.supplierId} no encontrado`,
         );
       }
     }

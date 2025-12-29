@@ -5,6 +5,7 @@ import {
   IsOptional,
   Min,
   MaxLength,
+  IsUUID,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -109,4 +110,12 @@ export class CreateThreadDto {
   @IsString()
   @IsOptional()
   description?: string;
+
+  @ApiPropertyOptional({
+    description: 'ID del proveedor asociado al hilo',
+    example: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
+  })
+  @IsUUID()
+  @IsOptional()
+  supplierId?: string;
 }

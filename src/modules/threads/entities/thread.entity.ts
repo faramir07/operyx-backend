@@ -4,8 +4,11 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Supplier } from '../../suppliers/entities/supplier.entity';
 
 @Entity('threads')
 export class Thread {
@@ -55,6 +58,21 @@ export class Thread {
   })
   @Column({ type: 'text', nullable: true })
   description?: string;
+
+  @ApiPropertyOptional({
+    description: 'ID del proveedor asociado al hilo',
+    example: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
+  })
+  @Column({ type: 'uuid', nullable: true })
+  supplierId?: string;
+
+  @ApiPropertyOptional({
+    description: 'Proveedor asociado al hilo',
+    type: () => Supplier,
+  })
+  @ManyToOne(() => Supplier, { nullable: true, eager: false })
+  @JoinColumn({ name: 'supplierId' })
+  supplier?: Supplier;
 
   @ApiProperty({ description: 'Fecha de creación' })
   @CreateDateColumn()

@@ -6,6 +6,32 @@ Este documento describe las funcionalidades y módulos del sistema Operyx para g
 
 ### ✅ Completados
 
+#### Gestión de Proveedores (Suppliers)
+
+- **Descripción:** Gestión completa de proveedores de materiales para la producción.
+
+- **Funcionalidades:**
+  - Registro de proveedores con información de contacto completa
+  - Código único opcional para identificación
+  - Información de contacto (nombre, email, teléfono, dirección)
+  - Notas adicionales sobre el proveedor
+  - Control de estado activo/inactivo
+  - Búsqueda y filtrado de proveedores por diferentes criterios
+  - Paginación de resultados
+  - Relación opcional con inventario de hilos (un proveedor puede tener múltiples hilos asociados)
+
+- **Endpoints disponibles:**
+  - `POST /suppliers` - Crear un nuevo proveedor
+  - `GET /suppliers` - Listar proveedores con filtros y paginación
+  - `GET /suppliers/:id` - Obtener un proveedor por ID
+  - `PUT /suppliers/:id` - Actualizar un proveedor
+  - `DELETE /suppliers/:id` - Eliminar un proveedor
+
+- **Relaciones:**
+  - Se relaciona con Inventario de Materia Prima (hilos asociados) - Opcional
+
+---
+
 #### Inventario de Materia Prima (Threads)
 
 - **Descripción:** Gestión completa del inventario de hilos y materiales utilizados en la producción de medias.
@@ -20,6 +46,8 @@ Este documento describe las funcionalidades y módulos del sistema Operyx para g
   - Búsqueda y filtrado de materiales por diferentes criterios
   - Paginación de resultados
   - Identificación de stock bajo (filtrado en frontend comparando currentStock con minStock)
+  - Asignación opcional de proveedor a cada hilo
+  - Filtrado de hilos por proveedor
 
 - **Endpoints disponibles:**
   - `POST /threads` - Crear un nuevo hilo
@@ -31,6 +59,7 @@ Este documento describe las funcionalidades y módulos del sistema Operyx para g
   - `PUT /threads/:id/adjust-stock` - Rectificar inventario físico (ajuste por conteo, calcula diferencia y merma)
 
 - **Relaciones:**
+  - Se relaciona con Gestión de Proveedores (proveedor asociado) - Opcional
   - Se relaciona con Órdenes de Producción (materiales utilizados) - Futuro
   - Se relaciona con Fichas Técnicas (materiales requeridos por modelo) - Futuro
 
@@ -154,6 +183,7 @@ _Ningún módulo en desarrollo actualmente_
 
 Los módulos están diseñados para funcionar de manera independiente pero comunicarse entre sí cuando sea necesario:
 
+- **Proveedores** ↔ **Inventario**: Asignación opcional de proveedor a materiales (hilos)
 - **Inventario** ↔ **Órdenes de Producción**: Consulta de disponibilidad de materiales al crear una orden
 - **Fichas Técnicas** ↔ **Órdenes de Producción**: Aplicación de especificaciones al iniciar producción
 - **Órdenes de Producción** ↔ **Control de Producción**: Seguimiento de avance de órdenes
