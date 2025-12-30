@@ -43,6 +43,7 @@ async function bootstrap() {
     .addTag('threads', 'Gestión de inventario de hilos y materiales')
     .addTag('suppliers', 'Gestión de proveedores')
     .addTag('product-specs', 'Gestión de fichas técnicas de medias')
+    .addTag('machines', 'Gestión de maquinaria de producción')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);

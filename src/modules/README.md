@@ -96,9 +96,38 @@ Este documento describe las funcionalidades y módulos del sistema Operyx para g
 
 ---
 
+#### Gestión de Maquinaria (Machines)
+
+- **Descripción:** Registro y gestión de las máquinas de producción con sus características y estados.
+
+- **Funcionalidades:**
+  - Registro de máquinas con código único identificador
+  - Características técnicas: número de agujas (valor fijo), cantidad de colores que puede trabajar (máximo 15)
+  - Tallas que puede producir (1 a 3 tallas por máquina, relacionadas con el enum Size)
+  - Estado de la máquina: operativa, ejecutando, mantenimiento, inactiva
+  - Horas de trabajo acumuladas (inicia en 0, se actualiza con órdenes ejecutadas)
+  - Notas adicionales sobre la máquina
+  - Consulta de máquinas por diferentes criterios (código, nombre, estado, agujas, colores, tallas)
+  - Paginación de resultados
+  - Búsqueda general por código o nombre
+  - Estado por defecto para nuevas máquinas: operativa
+
+- **Endpoints disponibles:**
+  - `POST /machines` - Crear una nueva máquina
+  - `GET /machines` - Listar máquinas con filtros y paginación
+  - `GET /machines/:id` - Obtener una máquina por ID
+  - `PATCH /machines/:id` - Actualizar una máquina
+  - `DELETE /machines/:id` - Eliminar una máquina
+
+- **Relaciones:**
+  - Se relaciona con Fichas Técnicas (tallas que puede producir) - Indirecta
+  - Se relaciona con Órdenes de Producción (asignación de órdenes, cola de órdenes, historial) - Futuro
+
+---
+
 ### 🚧 En Desarrollo
 
-_Ningún módulo en desarrollo actualmente_
+       _Ningún módulo en desarrollo actualmente_
 
 ### 📋 Pendientes
 
@@ -196,7 +225,9 @@ Los módulos están diseñados para funcionar de manera independiente pero comun
 
 - **Proveedores** ↔ **Inventario**: Asignación opcional de proveedor a materiales (hilos)
 - **Inventario** ↔ **Fichas Técnicas**: Referencia a hilos utilizados en fichas técnicas (elástico, lycra, base)
+- **Fichas Técnicas** ↔ **Maquinaria**: Tallas que puede producir cada máquina (indirecta)
 - **Fichas Técnicas** ↔ **Órdenes de Producción**: Aplicación de especificaciones al iniciar producción (futuro)
+- **Maquinaria** ↔ **Órdenes de Producción**: Asignación de órdenes a máquinas, cola de órdenes, historial (futuro)
 - **Inventario** ↔ **Órdenes de Producción**: Consulta de disponibilidad de materiales al crear una orden (futuro)
 - **Órdenes de Producción** ↔ **Control de Producción**: Seguimiento de avance de órdenes (futuro)
 - **Control de Producción** ↔ **Gestión de Pérdidas**: Registro de pérdidas durante producción (futuro)

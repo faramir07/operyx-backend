@@ -10,6 +10,7 @@ import { JwtStrategy } from './common/strategies';
 import { ThreadsModule } from './modules/threads/threads.module';
 import { SuppliersModule } from './modules/suppliers/suppliers.module';
 import { ProductSpecsModule } from './modules/product-specs/product-specs.module';
+import { MachinesModule } from './modules/machines/machines.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { ProductSpecsModule } from './modules/product-specs/product-specs.module
     ThreadsModule,
     SuppliersModule,
     ProductSpecsModule,
+    MachinesModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],
