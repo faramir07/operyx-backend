@@ -60,16 +60,8 @@ Este documento describe las funcionalidades y módulos del sistema Operyx para g
 
 - **Relaciones:**
   - Se relaciona con Gestión de Proveedores (proveedor asociado) - Opcional
+  - Se relaciona con Fichas Técnicas (materiales utilizados: elástico, lycra, base) - Opcional
   - Se relaciona con Órdenes de Producción (materiales utilizados) - Futuro
-  - Se relaciona con Fichas Técnicas (materiales requeridos por modelo) - Futuro
-
----
-
-### 🚧 En Desarrollo
-
-_Ningún módulo en desarrollo actualmente_
-
-### 📋 Pendientes
 
 ---
 
@@ -78,18 +70,37 @@ _Ningún módulo en desarrollo actualmente_
 - **Descripción:** Gestión de especificaciones técnicas de los diferentes modelos de medias a producir.
 
 - **Funcionalidades:**
-  - Creación de fichas técnicas por modelo de media
-  - Definición de materiales necesarios por modelo (tipo y cantidad de hilos)
-  - Especificaciones de tallas y medidas
-  - Configuración de colores disponibles por modelo
-  - Tiempos estimados de producción
+  - Creación de fichas técnicas con código único identificador
+  - Registro de nombre de archivo asociado a la ficha técnica
+  - Definición de talla estándar (2-4, 4-6, 6-8, 8-10, 10-12)
+  - Asignación de materiales utilizados (hilo elástico, hilo lycra, hilo base principal)
+  - Configuración de densidades para 7 partes de la media (valores 10-50)
+  - Registro de tiempo estimado de elaboración (en segundos)
+  - Registro de peso del par de medias terminado (en kg)
+  - Notas adicionales sobre características especiales
   - Actualización de especificaciones
-  - Consulta de fichas técnicas
-  - Búsqueda por modelo, talla, color
+  - Consulta de fichas técnicas con información completa de materiales
+  - Búsqueda y filtrado por código, nombre de archivo, talla, materiales
+  - Paginación de resultados
+
+- **Endpoints disponibles:**
+  - `POST /product-specs` - Crear una nueva ficha técnica
+  - `GET /product-specs` - Listar fichas técnicas con filtros y paginación
+  - `GET /product-specs/:id` - Obtener una ficha técnica por ID (incluye información de materiales)
+  - `PUT /product-specs/:id` - Actualizar una ficha técnica
+  - `DELETE /product-specs/:id` - Eliminar una ficha técnica
 
 - **Relaciones:**
-  - Se relaciona con Inventario de Materia Prima (materiales requeridos)
-  - Se relaciona con Órdenes de Producción (especificaciones a seguir)
+  - Se relaciona con Inventario de Materia Prima (hilos utilizados: elástico, lycra, base) - Opcional
+  - Se relaciona con Órdenes de Producción (especificaciones a seguir) - Futuro
+
+---
+
+### 🚧 En Desarrollo
+
+_Ningún módulo en desarrollo actualmente_
+
+### 📋 Pendientes
 
 ---
 
@@ -184,11 +195,12 @@ _Ningún módulo en desarrollo actualmente_
 Los módulos están diseñados para funcionar de manera independiente pero comunicarse entre sí cuando sea necesario:
 
 - **Proveedores** ↔ **Inventario**: Asignación opcional de proveedor a materiales (hilos)
-- **Inventario** ↔ **Órdenes de Producción**: Consulta de disponibilidad de materiales al crear una orden
-- **Fichas Técnicas** ↔ **Órdenes de Producción**: Aplicación de especificaciones al iniciar producción
-- **Órdenes de Producción** ↔ **Control de Producción**: Seguimiento de avance de órdenes
-- **Control de Producción** ↔ **Gestión de Pérdidas**: Registro de pérdidas durante producción
-- **Todos los Módulos** → **Reportes**: Consolidación de datos para análisis
+- **Inventario** ↔ **Fichas Técnicas**: Referencia a hilos utilizados en fichas técnicas (elástico, lycra, base)
+- **Fichas Técnicas** ↔ **Órdenes de Producción**: Aplicación de especificaciones al iniciar producción (futuro)
+- **Inventario** ↔ **Órdenes de Producción**: Consulta de disponibilidad de materiales al crear una orden (futuro)
+- **Órdenes de Producción** ↔ **Control de Producción**: Seguimiento de avance de órdenes (futuro)
+- **Control de Producción** ↔ **Gestión de Pérdidas**: Registro de pérdidas durante producción (futuro)
+- **Todos los Módulos** → **Reportes**: Consolidación de datos para análisis (futuro)
 
 Esta arquitectura modular permite:
 

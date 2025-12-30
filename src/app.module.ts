@@ -9,6 +9,7 @@ import { getDatabaseConfig } from './config/database.config';
 import { JwtStrategy } from './common/strategies';
 import { ThreadsModule } from './modules/threads/threads.module';
 import { SuppliersModule } from './modules/suppliers/suppliers.module';
+import { ProductSpecsModule } from './modules/product-specs/product-specs.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { SuppliersModule } from './modules/suppliers/suppliers.module';
     PassportModule.register({ defaultStrategy: 'jwt' }),
     ThreadsModule,
     SuppliersModule,
+    ProductSpecsModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],
