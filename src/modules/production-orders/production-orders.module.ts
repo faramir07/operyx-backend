@@ -7,6 +7,7 @@ import { PartialWeight } from './entities/partial-weight.entity';
 import { ProductSpec } from '../product-specs/entities/product-spec.entity';
 import { Machine } from '../machines/entities/machine.entity';
 import { Thread } from '../threads/entities/thread.entity';
+import { FinishedSocksModule } from '../finished-socks/finished-socks.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { Thread } from '../threads/entities/thread.entity';
       Machine,
       Thread,
     ]),
+    FinishedSocksModule, // Importar FinishedSocksModule para usar FinishedSocksService
   ],
   controllers: [ProductionOrdersController],
   providers: [ProductionOrdersService],

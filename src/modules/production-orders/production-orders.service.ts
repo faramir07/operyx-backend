@@ -20,6 +20,8 @@ import { PartialWeightDto } from './dto/partial-weight.dto';
 import { OrderStatus } from './enums/order-status.enum';
 import { Priority } from './enums/priority.enum';
 import { MachineStatus } from '../machines/enums/machine-status.enum';
+import { FinishedSocksService } from '../finished-socks/finished-socks.service';
+import { MovementType } from '../finished-socks/enums/movement-type.enum';
 
 @Injectable()
 export class ProductionOrdersService {
@@ -34,6 +36,7 @@ export class ProductionOrdersService {
     private readonly machineRepository: Repository<Machine>,
     @InjectRepository(Thread)
     private readonly threadRepository: Repository<Thread>,
+    private readonly finishedSocksService: FinishedSocksService,
   ) {}
 
   async create(
@@ -443,6 +446,46 @@ export class ProductionOrdersService {
       if (machine) {
         machine.workingHours = Number(machine.workingHours) + hoursWorked;
         await this.machineRepository.save(machine);
+      }
+    }
+
+    // Incrementar stock de medias terminadas
+    // Primero buscamos el registro de FinishedSock por productSpecId y size
+    if (order.finalCount && order.finalCount > 0) {
+      try {
+        // Buscar el registro de FinishedSock
+        const finishedSocks = await this.finishedSocksService.findAll({
+          productSpecId: productSpec.id,
+          size: productSpec.size,
+          page: 1,
+          limit: 1,
+        });
+
+        if (finishedSocks.items.length > 0) {
+          const finishedSock = finishedSocks.items[0];
+          // Registrar el movimiento de producción
+          await this.finishedSocksService.registerStockMovement(
+            finishedSock.id,
+            {
+              quantity: order.finalCount,
+              type: MovementType.PRODUCTION,
+              reason: `Producción completada - Orden ${order.id}`,
+              productionOrderId: order.id,
+            },
+          );
+        } else {
+          // Si no existe el registro, solo registramos un warning
+          // pero no fallamos la orden (el registro se puede crear manualmente después)
+          console.warn(
+            `No se encontró registro de medias terminadas para ProductSpec ${productSpec.id} y talla ${productSpec.size}. El stock no se incrementará automáticamente.`,
+          );
+        }
+      } catch (error) {
+        // Si hay un error, solo registramos un warning pero no fallamos la orden
+        console.warn(
+          `Error al incrementar stock de medias terminadas para ProductSpec ${productSpec.id} y talla ${productSpec.size}:`,
+          error instanceof Error ? error.message : String(error),
+        );
       }
     }
 

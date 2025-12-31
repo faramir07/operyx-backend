@@ -12,6 +12,8 @@ import { SuppliersModule } from './modules/suppliers/suppliers.module';
 import { ProductSpecsModule } from './modules/product-specs/product-specs.module';
 import { MachinesModule } from './modules/machines/machines.module';
 import { ProductionOrdersModule } from './modules/production-orders/production-orders.module';
+import { FinishedSocksModule } from './modules/finished-socks/finished-socks.module';
+import { PackagingModule } from './modules/packaging/packaging.module';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { ProductionOrdersModule } from './modules/production-orders/production-o
     ProductSpecsModule,
     MachinesModule,
     ProductionOrdersModule,
+    FinishedSocksModule,
+    PackagingModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],
