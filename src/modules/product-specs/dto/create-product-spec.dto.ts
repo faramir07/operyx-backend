@@ -162,6 +162,48 @@ export class CreateProductSpecDto {
   weight!: number;
 
   @ApiPropertyOptional({
+    description:
+      'Porcentaje aproximado de hilo elástico utilizado (0-100). Los tres porcentajes deben sumar 100',
+    example: 30.0,
+    minimum: 0,
+    maximum: 100,
+  })
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0)
+  @Max(100)
+  @Type(() => Number)
+  @IsOptional()
+  elasticThreadPercentage?: number;
+
+  @ApiPropertyOptional({
+    description:
+      'Porcentaje aproximado de hilo lycra utilizado (0-100). Los tres porcentajes deben sumar 100',
+    example: 20.0,
+    minimum: 0,
+    maximum: 100,
+  })
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0)
+  @Max(100)
+  @Type(() => Number)
+  @IsOptional()
+  lycraThreadPercentage?: number;
+
+  @ApiPropertyOptional({
+    description:
+      'Porcentaje aproximado de hilo base utilizado (0-100). Los tres porcentajes deben sumar 100',
+    example: 50.0,
+    minimum: 0,
+    maximum: 100,
+  })
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0)
+  @Max(100)
+  @Type(() => Number)
+  @IsOptional()
+  baseThreadPercentage?: number;
+
+  @ApiPropertyOptional({
     description: 'Notas adicionales sobre la ficha técnica',
     example: 'Media deportiva con refuerzo en talón y puntera',
   })

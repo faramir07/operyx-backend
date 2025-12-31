@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -67,6 +68,25 @@ export class ProductSpecsService {
       if (threadCount === 0) {
         throw new NotFoundException(
           `Hilo base con ID ${createProductSpecDto.baseThreadId} no encontrado`,
+        );
+      }
+    }
+
+    // Validar que los porcentajes sumen 100 (si se proporcionan)
+    if (
+      createProductSpecDto.elasticThreadPercentage !== undefined ||
+      createProductSpecDto.lycraThreadPercentage !== undefined ||
+      createProductSpecDto.baseThreadPercentage !== undefined
+    ) {
+      const elastic = createProductSpecDto.elasticThreadPercentage || 0;
+      const lycra = createProductSpecDto.lycraThreadPercentage || 0;
+      const base = createProductSpecDto.baseThreadPercentage || 0;
+      const sum = elastic + lycra + base;
+
+      // Permitir tolerancia de ±0.1
+      if (Math.abs(sum - 100) > 0.1) {
+        throw new BadRequestException(
+          `Los porcentajes de material deben sumar 100. Suma actual: ${sum.toFixed(2)}%`,
         );
       }
     }
@@ -219,6 +239,34 @@ export class ProductSpecsService {
       if (threadCount === 0) {
         throw new NotFoundException(
           `Hilo base con ID ${updateProductSpecDto.baseThreadId} no encontrado`,
+        );
+      }
+    }
+
+    // Validar que los porcentajes sumen 100 (si se actualizan)
+    if (
+      updateProductSpecDto.elasticThreadPercentage !== undefined ||
+      updateProductSpecDto.lycraThreadPercentage !== undefined ||
+      updateProductSpecDto.baseThreadPercentage !== undefined
+    ) {
+      const elastic =
+        updateProductSpecDto.elasticThreadPercentage ??
+        productSpec.elasticThreadPercentage ??
+        0;
+      const lycra =
+        updateProductSpecDto.lycraThreadPercentage ??
+        productSpec.lycraThreadPercentage ??
+        0;
+      const base =
+        updateProductSpecDto.baseThreadPercentage ??
+        productSpec.baseThreadPercentage ??
+        0;
+      const sum = elastic + lycra + base;
+
+      // Permitir tolerancia de ±0.1
+      if (Math.abs(sum - 100) > 0.1) {
+        throw new BadRequestException(
+          `Los porcentajes de material deben sumar 100. Suma actual: ${sum.toFixed(2)}%`,
         );
       }
     }

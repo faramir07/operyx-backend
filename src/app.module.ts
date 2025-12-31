@@ -11,6 +11,7 @@ import { ThreadsModule } from './modules/threads/threads.module';
 import { SuppliersModule } from './modules/suppliers/suppliers.module';
 import { ProductSpecsModule } from './modules/product-specs/product-specs.module';
 import { MachinesModule } from './modules/machines/machines.module';
+import { ProductionOrdersModule } from './modules/production-orders/production-orders.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { MachinesModule } from './modules/machines/machines.module';
     SuppliersModule,
     ProductSpecsModule,
     MachinesModule,
+    ProductionOrdersModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],
