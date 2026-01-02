@@ -12,5 +12,5 @@ export const getDatabaseConfig = (
   database: configService.get<string>('database.name'),
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
   synchronize: configService.get<string>('nodeEnv') === 'development',
-  logging: configService.get<string>('nodeEnv') === 'development',
+  logging: false, // Desactivar logging de SQL, solo mostrar rutas HTTP
 });

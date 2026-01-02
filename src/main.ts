@@ -7,12 +7,32 @@ import { ResponseInterceptor } from './common/interceptors';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: ['log', 'error', 'warn'], // Solo mostrar logs, errores y warnings (no SQL)
+  });
   const configService = app.get(ConfigService);
 
   // Configurar CORS para permitir requests desde la app móvil
+  const nodeEnv = configService.get<string>('nodeEnv');
+  const frontendUrl = configService.get<string>('frontendUrl');
+
   app.enableCors({
-    origin: configService.get<string>('frontendUrl'),
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean) => void,
+    ) => {
+      // En desarrollo, permitir todas las conexiones (incluye móvil con IP local)
+      if (nodeEnv === 'development') {
+        callback(null, true);
+        return;
+      }
+      // En producción, solo permitir el frontend configurado
+      if (!origin || origin === frontendUrl) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -58,4 +78,7 @@ async function bootstrap() {
     `Swagger documentation available at: http://localhost:${port}/api/docs`,
   );
 }
-bootstrap();
+bootstrap().catch((error) => {
+  console.error('Error starting application:', error);
+  process.exit(1);
+});

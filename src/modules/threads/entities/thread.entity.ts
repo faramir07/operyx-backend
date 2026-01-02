@@ -52,6 +52,13 @@ export class Thread {
   @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
   currentStock!: number;
 
+  @ApiProperty({
+    description: 'Valor total del inventario (currentStock * price)',
+    example: 1599.0,
+  })
+  @Column({ type: 'decimal', precision: 15, scale: 2, default: 0 })
+  totalValue!: number;
+
   @ApiPropertyOptional({
     description: 'Descripción adicional del hilo',
     example: 'Hilo de algodón premium',

@@ -23,6 +23,14 @@ export class ThreadsService {
     private readonly supplierRepository: Repository<Supplier>,
   ) {}
 
+  /**
+   * Calcula el valor total del inventario
+   * totalValue = currentStock * price
+   */
+  private calculateTotalValue(currentStock: number, price: number): number {
+    return Number(currentStock) * Number(price);
+  }
+
   async create(createThreadDto: CreateThreadDto): Promise<Thread> {
     // Verificar si ya existe un hilo con el mismo código
     const existingThread = await this.threadRepository.findOne({
@@ -48,9 +56,13 @@ export class ThreadsService {
       }
     }
 
+    const currentStock = createThreadDto.currentStock || 0;
+    const price = createThreadDto.price;
+
     const thread = this.threadRepository.create({
       ...createThreadDto,
-      currentStock: createThreadDto.currentStock || 0,
+      currentStock,
+      totalValue: this.calculateTotalValue(currentStock, price),
     });
 
     return await this.threadRepository.save(thread);
@@ -162,7 +174,19 @@ export class ThreadsService {
       }
     }
 
-    Object.assign(thread, updateThreadDto);
+    // Remover weight y currentStock del DTO de actualización (no se pueden modificar después de creado)
+    // weight: no se modifica después de crear
+    // currentStock: solo se modifica mediante movimientos de stock
+    const { weight, currentStock, ...updateData } = updateThreadDto;
+    Object.assign(thread, updateData);
+
+    // Si se actualizó el precio, recalcular el valor total (usando el stock actual existente)
+    const price = updateThreadDto.price ?? thread.price;
+    thread.totalValue = this.calculateTotalValue(
+      Number(thread.currentStock),
+      Number(price),
+    );
+
     return await this.threadRepository.save(thread);
   }
 
@@ -195,8 +219,12 @@ export class ThreadsService {
       }
     }
 
-    // Actualizar el stock
+    // Actualizar el stock y recalcular el valor total
     thread.currentStock = newStock;
+    thread.totalValue = this.calculateTotalValue(
+      newStock,
+      Number(thread.price),
+    );
 
     return await this.threadRepository.save(thread);
   }
@@ -232,8 +260,12 @@ export class ThreadsService {
     // Ya que el stock está medido en kg
     const differenceWeight = Math.abs(difference);
 
-    // Actualizar el stock al valor físico
+    // Actualizar el stock al valor físico y recalcular el valor total
     thread.currentStock = physicalStock;
+    thread.totalValue = this.calculateTotalValue(
+      physicalStock,
+      Number(thread.price),
+    );
     const updatedThread = await this.threadRepository.save(thread);
 
     return {
